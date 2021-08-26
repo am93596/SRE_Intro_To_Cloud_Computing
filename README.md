@@ -68,7 +68,7 @@
 - This means that the company has its own physical servers and data centre for their service
 - Pros:
         - The company can be fully responsible for the security and upkeep of the servers and data - they are not relying on another business
-	- 
+	-
 - Cons:
         - May not be cost-effective, depending on how close the estimation of traffic and storage space required is to how the service is actually used
 	- A lot of expenses are required to keep the servers and data centre running, e.g. hiring security guards, buying servers, building physical storage for the servers and data centre, etc.
@@ -108,3 +108,35 @@
 	- More expensive than having one copy as the company needs to pay each extra cloud provider they use, on top of the main one
 
 ![Multi Cloud Storage](multi_cloud_storage.png)
+
+**To Set Up NginX Web Server On Virtual Machine**
+- Make a Vagrantfile with the following text:
+Vagrant.configure("2") do |config|
+		config.vm.box = "ubuntu/xenial64"
+		config.vm.network "private_network", ip: "192.168.10.100"
+end
+- in git bash, in the same directory as your Vagrantfile, enter the following commands:
+	vagrant up
+	vagrant ssh
+- then use the following:
+	sudo apt-get update -y
+	sudo apt-get upgrade -y
+	sudo apt-get install nginx -y
+- to check whether the nginx package installed, use:
+	systemctl status nginx
+- then, in your browser, type in the ip address from the Vagrantfile (192.168.10.100)
+
+
+**Tasks**
+1. Create provision.sh script (in git bash) with the following lines:
+	!#/bin/bash
+	sudo apt-get update -y
+	sudo apt-get upgrade -y
+	sudo apt-get install nginx -y
+	- Save and close, then run the following in git bash:
+		chmod +x provision.sh
+2. Inject the provision.sh script inside the Vagrantfile
+	- add the following line in the Vagrantfile before the 'end' line
+		config.vm.provision "shell", path: "provision.sh"
+3. With vagrant up, Vagrantfile should run the script
+4. Check 192.168.10.100 in the browser
