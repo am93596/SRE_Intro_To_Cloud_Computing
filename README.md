@@ -109,6 +109,10 @@
 
 ![Multi Cloud Storage](multi_cloud_storage.png)
 
+
+![Vagrant Diagram](varant_image.png)
+
+
 **To Set Up NginX Web Server On Virtual Machine**
 - Make a Vagrantfile with the following text:
 Vagrant.configure("2") do |config|
