@@ -144,3 +144,25 @@ end
 		config.vm.provision "shell", path: "provision.sh"
 3. With vagrant up, Vagrantfile should run the script
 4. Check 192.168.10.100 in the browser
+
+
+**nodejs app**
+Add the following to the Vagrantfile before the 'end' line:
+	config.vm.synced_folder "app", "/home/ubuntu/app"
+
+
+**Installing dependencies**
+- in the vm in /home/ubuntu, install nodejs with the following line
+	sudo apt-get install nodejs -y
+- then enter the following lines:
+	sudo apt-get install python-software-properties
+	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+	sudo apt-get install nodejs -y
+
+- install pm2 with the following line:
+	sudo npm install pm2 -g
+- then cd into the app folder, and run:
+	npm install
+- then run:
+	npm start
+- in the browser, type in 192.168.10.100:3000
