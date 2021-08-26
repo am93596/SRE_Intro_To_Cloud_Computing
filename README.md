@@ -110,7 +110,7 @@
 ![Multi Cloud Storage](multi_cloud_storage.png)
 
 
-![Vagrant Diagram](varant_image.png)
+![Vagrant Diagram](vagrant_image.png)
 
 
 **To Set Up NginX Web Server On Virtual Machine**
