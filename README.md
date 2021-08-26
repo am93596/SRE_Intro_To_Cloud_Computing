@@ -13,6 +13,7 @@
 **SRE introduction**
 - What is the role of SRE?
 	- SREs are responsible for the reliability of a service
+	- They ensure that a service is tested in all potential scenarios, and that risks and errors are identified early (ideally before the customer notices) and resolved quickly and smoothly
 
 
 **Cloud Computing**
