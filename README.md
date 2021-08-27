@@ -162,7 +162,47 @@ Add the following to the Vagrantfile before the 'end' line:
 - install pm2 with the following line:
 	sudo npm install pm2 -g
 - then cd into the app folder, and run:
-	npm install
+	sudo npm install
 - then run:
-	npm start
+	sudo npm start
 - in the browser, type in 192.168.10.100:3000
+
+
+
+**Reverse Proxy Steps**
+- In the vm, enter the following command:
+	sudo nano /etc/nginx/sites-available/default
+- In the server section, replace the location code with the following:
+location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+- Save and close
+- Then enter the following code to check there were no errors:
+	sudo nginx -t
+- Then enter the following:
+	sudo systemctl restart nginx
+- Now enter this last line to start the app, and navigate to the localhost ip:
+	sudo npm start
+
+
+**Fri 27 Aug Notes**
+Create a multi machine set up
+1 with node app provisioning
+2nd vm with mongodb installation
+systemctl status mongodb
+Private ip: 192.168.10.150:27017/posts
+Configure reverse proxy with nginx so the app can load on the ip without the 3000
+Step 1. Configure reverse proxy first without the db machine
+(The app should load without 3000 port instead of nginx default page)
+Step 2. Create 2 VMs with Vagrantfile called app and db
+Step 3. App provisioned with node
+Step 4. db with mongodb
+Step 5. env variable to be created in app vm called DB_HOST=192.168.10.150:27017/posts
+(env variable can be created with export command in Linux) export DB_HOST=192.168.10.150:27017/posts >> ~/.bashrc
+Step 6. Check with printenv DB_HOST
+Step 7. If everything is provisioned correctly, we should be able to see /posts loading the db for us
