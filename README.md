@@ -206,3 +206,141 @@ Step 5. env variable to be created in app vm called DB_HOST=192.168.10.150:27017
 (env variable can be created with export command in Linux) export DB_HOST=192.168.10.150:27017/posts >> ~/.bashrc
 Step 6. Check with printenv DB_HOST
 Step 7. If everything is provisioned correctly, we should be able to see /posts loading the db for us
+
+**next to do list**
+if you have mongodb installed
+sudo nano /etc/mongo.conf
+ip 127.0.0.1 change to 0.0.0.0
+port: 27017
+restart mongo
+enable mongo
+check status
+
+**Automation Notes**
+Prerequisites:
+- Install VirtualBox, Vagrant, and Ruby.
+1. Create a directory for the app to run in
+2. Create a Vagrantfile file with the following contents:
+```
+Vagrant.configure("2") do |config|
+    config.vm.define "db" do |db|
+      db.vm.box = "ubuntu/xenial64"
+      db.vm.network "private_network", ip: "192.168.10.150"
+      db.vm.synced_folder "config_files", "/home/ubuntu/config_files"
+      db.vm.provision "shell", path: "db_provision.sh"
+    end
+    config.vm.define "app" do |app|
+      app.vm.box = "ubuntu/xenial64"
+      app.vm.network "private_network", ip: "192.168.10.100"
+      app.vm.synced_folder "app", "/home/ubuntu/app"
+      app.vm.synced_folder "config_files", "/home/ubuntu/config_files"
+      app.vm.provision "shell", path: "app_provision.sh"
+    end
+end
+```
+3. Create a db_provision.sh file with the following contents:
+```bash
+!#/bin/bash
+
+sudo apt-get update -y
+sudo apt-get upgrade -y
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add 
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+sudo apt-get update -y
+sudo apt-get install -y mongodb-org
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo ufw allow from 192.168.10.100/32 to any port 27017
+sudo rm /etc/mongod.conf
+sudo ln -s /home/ubuntu/config_files/mongod.conf /etc/mongod.conf
+sudo systemctl restart mongod
+```
+4. Create an app_provision.sh file with the following contents:
+```bash
+!#/bin/bash
+
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install nginx -y
+sudo apt-get install nodejs -y
+sudo apt-get install python-software-properties -y
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install nodejs -y
+cd /home/ubuntu/app
+sudo npm install pm2 -g
+sudo npm install
+sudo rm /etc/nginx/sites-available/default
+sudo ln -s /home/ubuntu/config_files/default /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl restart nginx
+echo 'export DB_HOST=192.168.10.150:27017/posts/' >> /etc/environment
+source /etc/environment
+node seeds/seed.js
+npm start
+```
+5. Create a directory called config_files
+6. In config_files, create a default file with the following contents:
+```
+server {
+    listen 80;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://localhost:3000;      
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade'; 
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;      
+    }
+}
+```
+7. In config_files, create a file called mongod.conf with the following contents:
+```
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# Where and how to store data.
+storage:
+  dbPath: /var/lib/mongodb
+  journal:
+    enabled: true
+#  engine:
+#  mmapv1:
+#  wiredTiger:
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongod.log
+
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+
+#security:
+
+#operationProfiling:
+
+#replication:
+
+#sharding:
+
+## Enterprise-Only Options:
+
+#auditLog:
+
+#snmp:
+```
+8. Download the app zip file, unzip it and then open the folder. Click and drag the app directory that you see into the directory you made for this project.
+9. Open a Git Bash terminal, navigate to the directory for this project, and type `vagrant up`
