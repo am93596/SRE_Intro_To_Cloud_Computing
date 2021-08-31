@@ -190,32 +190,6 @@ location / {
 	sudo npm start
 
 
-**Fri 27 Aug Notes**
-Create a multi machine set up
-1 with node app provisioning
-2nd vm with mongodb installation
-systemctl status mongodb
-Private ip: 192.168.10.150:27017/posts
-Configure reverse proxy with nginx so the app can load on the ip without the 3000
-Step 1. Configure reverse proxy first without the db machine
-(The app should load without 3000 port instead of nginx default page)
-Step 2. Create 2 VMs with Vagrantfile called app and db
-Step 3. App provisioned with node
-Step 4. db with mongodb
-Step 5. env variable to be created in app vm called DB_HOST=192.168.10.150:27017/posts
-(env variable can be created with export command in Linux) export DB_HOST=192.168.10.150:27017/posts >> ~/.bashrc
-Step 6. Check with printenv DB_HOST
-Step 7. If everything is provisioned correctly, we should be able to see /posts loading the db for us
-
-**next to do list**
-if you have mongodb installed
-sudo nano /etc/mongo.conf
-ip 127.0.0.1 change to 0.0.0.0
-port: 27017
-restart mongo
-enable mongo
-check status
-
 **Automation Notes**
 Prerequisites:
 - Install VirtualBox, Vagrant, and Ruby.
