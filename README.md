@@ -318,3 +318,5 @@ processManagement:
 ```
 8. Download the app zip file, unzip it and then open the folder. Click and drag the app directory that you see into the directory you made for this project.
 9. Open a Git Bash terminal, navigate to the directory for this project, and type `vagrant up`
+10. In your browser, navigate to 192.168.10.100 to see the app test page
+11. Then navigate to 192.168.10.100/posts to see the posts page
