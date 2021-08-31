@@ -320,3 +320,4 @@ processManagement:
 9. Open a Git Bash terminal, navigate to the directory for this project, and type `vagrant up`
 10. In your browser, navigate to 192.168.10.100 to see the app test page
 11. Then navigate to 192.168.10.100/posts to see the posts page
+12. After you are done, go back to the Git Bash terminal and press CTRL-C to stop the process
